@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جستجوی مخاطبین</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --border: #1e1e2e;
+    --accent: #6ee7b7;
+    --accent2: #818cf8;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --danger: #f87171;
+    --success: #34d399;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Vazirmatn', Tahoma, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(110,231,183,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(110,231,183,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 560px;
+    position: relative;
+    z-index: 1;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .logo-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-top: 4px;
+  }
+
+  /* DB Status */
+  #db-status {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 0.85rem;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--muted);
+    flex-shrink: 0;
+  }
+  .status-dot.active { background: var(--success); box-shadow: 0 0 8px var(--success); }
+
+  .status-info { flex: 1; color: var(--muted); }
+  .status-info strong { color: var(--text); display: block; }
+
+  .btn-clear {
+    background: none;
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-family: inherit;
+    transition: all .2s;
+  }
+  .btn-clear:hover { background: var(--danger); color: white; }
+
+  /* Upload Zone */
+  #upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 16px;
+    padding: 40px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .3s;
+    margin-bottom: 20px;
+    background: var(--surface);
+  }
+
+  #upload-zone:hover, #upload-zone.drag-over {
+    border-color: var(--accent);
+    background: rgba(110,231,183,0.04);
+  }
+
+  #upload-zone.hidden { display: none; }
+
+  .upload-icon { font-size: 2.5rem; margin-bottom: 12px; }
+  .upload-title { font-size: 1rem; font-weight: 600; margin-bottom: 6px; }
+  .upload-hint { color: var(--muted); font-size: 0.8rem; line-height: 1.6; }
+
+  #file-input { display: none; }
+
+  /* Progress */
+  #progress-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    display: none;
+  }
+
+  .progress-label { font-size: 0.85rem; color: var(--muted); margin-bottom: 10px; }
+  .progress-track { background: var(--border); border-radius: 100px; height: 6px; overflow: hidden; }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 100px;
+    width: 0%;
+    transition: width .3s;
+  }
+
+  /* Search */
+  #search-section { display: none; }
+  #search-section.visible { display: block; }
+
+  .search-wrap {
+    position: relative;
+    margin-bottom: 20px;
+  }
+
+  #search-input {
+    width: 100%;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 52px 16px 18px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 1.1rem;
+    outline: none;
+    transition: border-color .2s;
+    direction: ltr;
+    text-align: right;
+  }
+
+  #search-input:focus { border-color: var(--accent); }
+  #search-input::placeholder { color: var(--muted); direction: rtl; text-align: right; }
+
+  .search-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 1.2rem;
+    pointer-events: none;
+  }
+
+  /* Results */
+  #results { min-height: 60px; }
+
+  .result-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    animation: slideIn .2s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #000;
+    flex-shrink: 0;
+  }
+
+  .result-info { flex: 1; min-width: 0; }
+  .result-name { font-weight: 600; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .result-phone { color: var(--accent); font-size: 0.85rem; direction: ltr; text-align: right; margin-top: 2px; font-family: monospace; }
+
+  .result-badge {
+    font-size: 0.65rem;
+    padding: 2px 7px;
+    border-radius: 100px;
+    background: rgba(110,231,183,0.1);
+    color: var(--accent);
+    border: 1px solid rgba(110,231,183,0.2);
+    white-space: nowrap;
+  }
+
+  .no-result {
+    text-align: center;
+    padding: 32px;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .no-result .icon { font-size: 2rem; margin-bottom: 8px; }
+
+  /* Also show upload button when DB exists */
+  .update-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.8rem;
+    margin-bottom: 20px;
+    display: block;
+    width: 100%;
+    transition: all .2s;
+  }
+
+  .update-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+
+  footer {
+    margin-top: 32px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo">
+      <div class="logo-icon">📱</div>
+      <h1>جستجوی مخاطب</h1>
+    </div>
+    <p class="subtitle">جستجو با شماره تلفن در دفترچه مخاطبین</p>
+  </header>
+
+  <div id="db-status">
+    <div class="status-dot" id="status-dot"></div>
+    <div class="status-info">
+      <strong id="status-title">پایگاه داده بارگذاری نشده</strong>
+      <span id="status-detail">لطفاً فایل مخاطبین را آپلود کنید</span>
+    </div>
+    <button class="btn-clear" id="clear-btn" style="display:none" onclick="clearDatabase()">پاک کردن</button>
+  </div>
+
+  <div id="upload-zone" onclick="document.getElementById('file-input').click()">
+    <div class="upload-icon">📂</div>
+    <div class="upload-title">آپلود فایل مخاطبین</div>
+    <div class="upload-hint">
+      فایل VCF یا TXT را اینجا بکشید یا کلیک کنید<br>
+      پس از آپلود، داده‌ها در مرورگر ذخیره می‌شوند
+    </div>
+    <input type="file" id="file-input" accept=".vcf,.txt,.xlsx,.xls" onchange="handleFile(this.files[0])">
+  </div>
+
+  <div id="progress-bar">
+    <div class="progress-label" id="progress-label">در حال پردازش...</div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+  </div>
+
+  <div id="search-section">
+    <button class="update-btn" onclick="showUpload()">🔄 بروزرسانی پایگاه داده</button>
+    <div class="search-wrap">
+      <input type="tel" id="search-input" placeholder="شماره تلفن را وارد کنید..." oninput="search(this.value)" autocomplete="off">
+      <span class="search-icon">🔍</span>
+    </div>
+    <div id="results"></div>
+  </div>
+
+  <footer>داده‌ها فقط در مرورگر شما ذخیره می‌شوند</footer>
+</div>
+
+<script>
+const STORAGE_KEY = 'contacts_db_v2';
+let contacts = []; // [{name, phone, normalized}]
+
+// Normalize phone number to 10-digit Iranian format
+function normalizePhone(phone) {
+  if (!phone) return '';
+  let p = phone.replace(/\D/g, '');
+  if (p.startsWith('98') && p.length > 10) p = '0' + p.slice(2);
+  if (p.length === 10 && p.startsWith('9')) p = '0' + p;
+  return p;
+}
+
+// Decode quoted-printable
+function decodeQP(str) {
+  try {
+    return decodeURIComponent(str.replace(/=([0-9A-Fa-f]{2})/g, (_, h) => '%' + h));
+  } catch {
+    return str;
+  }
+}
+
+// Parse VCF content
+function parseVCF(text) {
+  const result = [];
+  const vcards = text.split(/BEGIN:VCARD/i).slice(1);
+  
+  for (const vcard of vcards) {
+    const lines = vcard.split(/\r?\n/);
+    let name = '';
+    const phones = [];
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      
+      // Handle folded lines
+      let full = line;
+      while (i + 1 < lines.length && (lines[i+1].startsWith(' ') || lines[i+1].startsWith('\t'))) {
+        full += lines[++i].trim();
+      }
+
+      const upper = full.toUpperCase();
+      
+      if (upper.startsWith('FN')) {
+        let val = full.split(':').slice(1).join(':').trim();
+        if (upper.includes('QUOTED-PRINTABLE')) {
+          val = val.replace(/=\r?\n/g, '');
+          val = decodeQP(val);
+        }
+        if (val) name = val;
+      }
+      
+      if (upper.startsWith('TEL')) {
+        const phone = full.split(':').slice(1).join(':').trim();
+        if (phone && /\d{6,}/.test(phone)) phones.push(phone);
+      }
+    }
+
+    if (name || phones.length) {
+      for (const phone of phones) {
+        const normalized = normalizePhone(phone);
+        if (normalized.length >= 7) {
+          result.push({ name: name || 'ناشناس', phone, normalized });
+        }
+      }
+      // Contact with name but no phone
+      if (phones.length === 0 && name) {
+        result.push({ name, phone: '', normalized: '' });
+      }
+    }
+  }
+  return result;
+}
+
+// Parse xlsx using SheetJS
+async function parseXLSX(file) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    script.onload = () => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
+          const wb = XLSX.read(e.target.result, { type: 'array' });
+          const ws = wb.Sheets[wb.SheetNames[0]];
+          const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+          const result = [];
+          
+          for (const row of rows) {
+            const vals = Object.values(row).map(String);
+            // Find phone-like value
+            const phoneVal = vals.find(v => /^[\d\+\-\s\(\)]{7,}$/.test(v.trim()));
+            const nameVal = vals.find(v => v && v !== phoneVal && v.trim().length > 1);
+            
+            if (phoneVal) {
+              const normalized = normalizePhone(phoneVal);
+              result.push({ name: nameVal || 'ناشناس', phone: phoneVal.trim(), normalized });
+            }
+          }
+          resolve(result);
+        } catch(e) { reject(e); }
+      };
+      reader.readAsArrayBuffer(file);
+    };
+    script.onerror = () => reject(new Error('XLSX load failed'));
+    document.head.appendChild(script);
+  });
+}
+
+async function handleFile(file) {
+  if (!file) return;
+  
+  const ext = file.name.split('.').pop().toLowerCase();
+  setProgress(true, 'در حال خواندن فایل...');
+  
+  try {
+    let parsed = [];
+    
+    if (ext === 'xlsx' || ext === 'xls') {
+      setProgress(true, 'در حال پردازش اکسل...');
+      parsed = await parseXLSX(file);
+    } else {
+      const text = await file.text();
+      setProgress(true, 'در حال تجزیه مخاطبین...');
+      await sleep(50);
+      parsed = parseVCF(text);
+    }
+
+    setProgress(true, 'در حال ذخیره‌سازی...', 80);
+    await sleep(50);
+    
+    contacts = parsed;
+    saveToStorage(file.name);
+    
+    setProgress(false);
+    updateStatus(file.name);
+    showSearch();
+    
+  } catch(e) {
+    setProgress(false);
+    alert('خطا در پردازش فایل: ' + e.message);
+  }
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function setProgress(show, label = '', pct = 60) {
+  document.getElementById('progress-bar').style.display = show ? 'block' : 'none';
+  document.getElementById('progress-label').textContent = label;
+  document.getElementById('progress-fill').style.width = pct + '%';
+}
+
+function saveToStorage(filename) {
+  try {
+    const data = { contacts, filename, savedAt: Date.now() };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch(e) {
+    // Storage might be full
+    console.warn('Could not save to localStorage:', e);
+  }
+}
+
+function loadFromStorage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    contacts = data.contacts || [];
+    updateStatus(data.filename, data.savedAt);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function clearDatabase() {
+  if (!confirm('آیا مطمئنید؟ پایگاه داده پاک خواهد شد.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  contacts = [];
+  document.getElementById('status-dot').className = 'status-dot';
+  document.getElementById('status-title').textContent = 'پایگاه داده بارگذاری نشده';
+  document.getElementById('status-detail').textContent = 'لطفاً فایل مخاطبین را آپلود کنید';
+  document.getElementById('clear-btn').style.display = 'none';
+  document.getElementById('search-section').classList.remove('visible');
+  document.getElementById('upload-zone').classList.remove('hidden');
+}
+
+function updateStatus(filename, savedAt) {
+  document.getElementById('status-dot').className = 'status-dot active';
+  document.getElementById('status-title').textContent = `${contacts.length.toLocaleString('fa')} مخاطب بارگذاری شد`;
+  
+  let detail = filename || 'فایل نامشخص';
+  if (savedAt) {
+    const d = new Date(savedAt);
+    detail += ` · ${d.toLocaleDateString('fa-IR')}`;
+  }
+  document.getElementById('status-detail').textContent = detail;
+  document.getElementById('clear-btn').style.display = 'block';
+}
+
+function showSearch() {
+  document.getElementById('upload-zone').classList.add('hidden');
+  document.getElementById('search-section').classList.add('visible');
+  document.getElementById('search-input').focus();
+}
+
+function showUpload() {
+  document.getElementById('upload-zone').classList.remove('hidden');
+}
+
+function search(query) {
+  const resultsEl = document.getElementById('results');
+  query = query.trim();
+  
+  if (!query) {
+    resultsEl.innerHTML = '';
+    return;
+  }
+
+  const norm = normalizePhone(query);
+  const last8 = norm.slice(-8);
+  
+  let found = [];
+  
+  if (norm.length >= 4) {
+    // Exact/partial match on normalized
+    found = contacts.filter(c => c.normalized && c.normalized.includes(norm.length >= 6 ? norm : norm));
+    
+    // If not enough, try last 8 digits
+    if (found.length === 0 && last8.length >= 6) {
+      found = contacts.filter(c => c.normalized && c.normalized.endsWith(last8));
+    }
+  }
+
+  if (found.length === 0) {
+    resultsEl.innerHTML = `<div class="no-result"><div class="icon">🔍</div>نتیجه‌ای یافت نشد</div>`;
+    return;
+  }
+
+  // Deduplicate
+  const seen = new Set();
+  found = found.filter(c => {
+    const key = c.name + c.phone;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  const html = found.slice(0, 20).map(c => {
+    const initials = c.name.charAt(0) || '?';
+    const badge = found.length > 1 ? '' : '<span class="result-badge">یافت شد</span>';
+    return `<div class="result-card">
+      <div class="result-avatar">${initials}</div>
+      <div class="result-info">
+        <div class="result-name">${escHtml(c.name)}</div>
+        <div class="result-phone">${escHtml(c.phone)}</div>
+      </div>
+      ${badge}
+    </div>`;
+  }).join('');
+
+  resultsEl.innerHTML = html + (found.length > 20 ? `<div class="no-result" style="padding:12px">و ${found.length - 20} نتیجه دیگر...</div>` : '');
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// Drag & drop
+const zone = document.getElementById('upload-zone');
+zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+zone.addEventListener('drop', e => {
+  e.preventDefault();
+  zone.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) handleFile(file);
+});
+
+// Init
+if (loadFromStorage() && contacts.length > 0) {
+  showSearch();
+}
+</script>
+</body>
+</html>
