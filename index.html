@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>جستجوی مخاطبین</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap');
-
   :root {
     --bg: #0a0a0f;
     --surface: #111118;
@@ -24,7 +22,7 @@
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: 'Vazirmatn', Tahoma, sans-serif;
+    font-family: Vazirmatn, Tahoma, 'Segoe UI', sans-serif;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -32,12 +30,11 @@
     padding: 24px 16px;
   }
 
-  /* Background grid */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
-    background-image: 
+    background-image:
       linear-gradient(rgba(110,231,183,0.03) 1px, transparent 1px),
       linear-gradient(90deg, rgba(110,231,183,0.03) 1px, transparent 1px);
     background-size: 40px 40px;
@@ -47,14 +44,14 @@
 
   .container {
     width: 100%;
-    max-width: 560px;
+    max-width: 580px;
     position: relative;
     z-index: 1;
   }
 
   header {
     text-align: center;
-    margin-bottom: 32px;
+    margin-bottom: 28px;
   }
 
   .logo {
@@ -65,30 +62,22 @@
   }
 
   .logo-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
+    width: 42px; height: 42px;
+    border-radius: 12px;
     background: linear-gradient(135deg, var(--accent), var(--accent2));
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     font-size: 20px;
   }
 
   h1 {
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.5rem; font-weight: 700;
     background: linear-gradient(135deg, var(--accent), var(--accent2));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  .subtitle {
-    color: var(--muted);
-    font-size: 0.85rem;
-    margin-top: 4px;
-  }
+  .subtitle { color: var(--muted); font-size: 0.83rem; margin-top: 4px; }
 
   /* DB Status */
   #db-status {
@@ -96,202 +85,147 @@
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 14px 18px;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: 12px;
-    font-size: 0.85rem;
+    font-size: 0.84rem;
   }
 
-  .status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--muted);
-    flex-shrink: 0;
-  }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
   .status-dot.active { background: var(--success); box-shadow: 0 0 8px var(--success); }
 
   .status-info { flex: 1; color: var(--muted); }
-  .status-info strong { color: var(--text); display: block; }
+  .status-info strong { color: var(--text); display: block; margin-bottom: 2px; }
 
   .btn-clear {
-    background: none;
-    border: 1px solid var(--danger);
-    color: var(--danger);
-    padding: 4px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.75rem;
-    font-family: inherit;
-    transition: all .2s;
+    background: none; border: 1px solid var(--danger);
+    color: var(--danger); padding: 4px 10px; border-radius: 6px;
+    cursor: pointer; font-size: 0.75rem; font-family: inherit; transition: all .2s;
   }
   .btn-clear:hover { background: var(--danger); color: white; }
 
-  /* Upload Zone */
+  /* Upload */
   #upload-zone {
     border: 2px dashed var(--border);
-    border-radius: 16px;
-    padding: 40px 24px;
-    text-align: center;
-    cursor: pointer;
-    transition: all .3s;
-    margin-bottom: 20px;
+    border-radius: 16px; padding: 38px 24px;
+    text-align: center; cursor: pointer;
+    transition: all .3s; margin-bottom: 18px;
     background: var(--surface);
   }
-
-  #upload-zone:hover, #upload-zone.drag-over {
-    border-color: var(--accent);
-    background: rgba(110,231,183,0.04);
-  }
-
+  #upload-zone:hover, #upload-zone.drag-over { border-color: var(--accent); background: rgba(110,231,183,0.04); }
   #upload-zone.hidden { display: none; }
-
-  .upload-icon { font-size: 2.5rem; margin-bottom: 12px; }
+  .upload-icon { font-size: 2.4rem; margin-bottom: 12px; }
   .upload-title { font-size: 1rem; font-weight: 600; margin-bottom: 6px; }
-  .upload-hint { color: var(--muted); font-size: 0.8rem; line-height: 1.6; }
-
+  .upload-hint { color: var(--muted); font-size: 0.8rem; line-height: 1.7; }
   #file-input { display: none; }
 
   /* Progress */
   #progress-bar {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
-    display: none;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px; margin-bottom: 18px; display: none;
   }
-
   .progress-label { font-size: 0.85rem; color: var(--muted); margin-bottom: 10px; }
   .progress-track { background: var(--border); border-radius: 100px; height: 6px; overflow: hidden; }
   .progress-fill {
     height: 100%;
     background: linear-gradient(90deg, var(--accent), var(--accent2));
-    border-radius: 100px;
-    width: 0%;
-    transition: width .3s;
+    border-radius: 100px; width: 0%; transition: width .3s;
   }
 
   /* Search */
   #search-section { display: none; }
   #search-section.visible { display: block; }
 
-  .search-wrap {
-    position: relative;
-    margin-bottom: 20px;
+  .update-btn {
+    background: none; border: 1px solid var(--border);
+    color: var(--muted); padding: 8px 16px; border-radius: 8px;
+    cursor: pointer; font-family: inherit; font-size: 0.8rem;
+    margin-bottom: 16px; display: block; width: 100%; transition: all .2s;
   }
+  .update-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+
+  /* Search tabs */
+  .search-tabs {
+    display: flex; gap: 8px; margin-bottom: 12px;
+  }
+
+  .tab-btn {
+    flex: 1; padding: 9px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--muted); cursor: pointer; font-family: inherit;
+    font-size: 0.85rem; transition: all .2s;
+  }
+  .tab-btn.active {
+    border-color: var(--accent); color: var(--accent);
+    background: rgba(110,231,183,0.07);
+  }
+
+  .search-wrap { position: relative; margin-bottom: 16px; }
 
   #search-input {
-    width: 100%;
-    background: var(--surface);
-    border: 2px solid var(--border);
-    border-radius: 14px;
-    padding: 16px 52px 16px 18px;
-    color: var(--text);
-    font-family: inherit;
-    font-size: 1.1rem;
-    outline: none;
-    transition: border-color .2s;
-    direction: ltr;
-    text-align: right;
+    width: 100%; background: var(--surface);
+    border: 2px solid var(--border); border-radius: 14px;
+    padding: 15px 52px 15px 18px;
+    color: var(--text); font-family: inherit;
+    font-size: 1.05rem; outline: none; transition: border-color .2s;
   }
-
   #search-input:focus { border-color: var(--accent); }
-  #search-input::placeholder { color: var(--muted); direction: rtl; text-align: right; }
+  #search-input::placeholder { color: var(--muted); }
 
+  /* direction set dynamically */
   .search-icon {
-    position: absolute;
-    left: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--muted);
-    font-size: 1.2rem;
-    pointer-events: none;
+    position: absolute; left: 16px; top: 50%;
+    transform: translateY(-50%); color: var(--muted);
+    font-size: 1.2rem; pointer-events: none;
   }
 
   /* Results */
-  #results { min-height: 60px; }
+  #results { min-height: 40px; }
 
   .result-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px 18px;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    animation: slideIn .2s ease;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 15px 18px; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 14px;
+    animation: slideIn .18s ease;
   }
-
-  @keyframes slideIn {
-    from { opacity: 0; transform: translateY(-8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+  @keyframes slideIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
 
   .result-avatar {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
+    width: 44px; height: 44px; border-radius: 12px;
     background: linear-gradient(135deg, var(--accent2), var(--accent));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #000;
-    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; font-weight: 700; color: #000; flex-shrink: 0;
   }
 
   .result-info { flex: 1; min-width: 0; }
-  .result-name { font-weight: 600; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .result-phone { color: var(--accent); font-size: 0.85rem; direction: ltr; text-align: right; margin-top: 2px; font-family: monospace; }
+  .result-name { font-weight: 600; font-size: 0.95rem; margin-bottom: 3px; }
+  .result-phone { color: var(--accent); font-size: 0.84rem; direction: ltr; text-align: right; font-family: monospace; }
 
   .result-badge {
-    font-size: 0.65rem;
-    padding: 2px 7px;
-    border-radius: 100px;
-    background: rgba(110,231,183,0.1);
-    color: var(--accent);
-    border: 1px solid rgba(110,231,183,0.2);
-    white-space: nowrap;
+    font-size: 0.65rem; padding: 3px 8px; border-radius: 100px;
+    background: rgba(110,231,183,0.1); color: var(--accent);
+    border: 1px solid rgba(110,231,183,0.2); white-space: nowrap;
+  }
+
+  /* Highlight matched text */
+  mark {
+    background: rgba(110,231,183,0.25);
+    color: var(--accent); border-radius: 3px; padding: 0 2px;
   }
 
   .no-result {
-    text-align: center;
-    padding: 32px;
-    color: var(--muted);
-    font-size: 0.9rem;
+    text-align: center; padding: 32px; color: var(--muted); font-size: 0.9rem;
   }
-
   .no-result .icon { font-size: 2rem; margin-bottom: 8px; }
 
-  /* Also show upload button when DB exists */
-  .update-btn {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    padding: 8px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 0.8rem;
-    margin-bottom: 20px;
-    display: block;
-    width: 100%;
-    transition: all .2s;
+  .more-results {
+    text-align: center; padding: 10px;
+    color: var(--muted); font-size: 0.82rem;
+    border: 1px dashed var(--border); border-radius: 10px; margin-top: 4px;
   }
 
-  .update-btn:hover { border-color: var(--accent2); color: var(--accent2); }
-
-  footer {
-    margin-top: 32px;
-    text-align: center;
-    color: var(--muted);
-    font-size: 0.75rem;
-  }
+  footer { margin-top: 28px; text-align: center; color: var(--muted); font-size: 0.74rem; }
 </style>
 </head>
 <body>
@@ -301,7 +235,7 @@
       <div class="logo-icon">📱</div>
       <h1>جستجوی مخاطب</h1>
     </div>
-    <p class="subtitle">جستجو با شماره تلفن در دفترچه مخاطبین</p>
+    <p class="subtitle">جستجو بر اساس نام یا شماره تلفن</p>
   </header>
 
   <div id="db-status">
@@ -330,8 +264,14 @@
 
   <div id="search-section">
     <button class="update-btn" onclick="showUpload()">🔄 بروزرسانی پایگاه داده</button>
+
+    <div class="search-tabs">
+      <button class="tab-btn active" id="tab-name" onclick="switchTab('name')">🔤 جستجو با نام</button>
+      <button class="tab-btn" id="tab-phone" onclick="switchTab('phone')">📞 جستجو با شماره</button>
+    </div>
+
     <div class="search-wrap">
-      <input type="tel" id="search-input" placeholder="شماره تلفن را وارد کنید..." oninput="search(this.value)" autocomplete="off">
+      <input type="text" id="search-input" placeholder="نام مخاطب را وارد کنید..." oninput="search(this.value)" autocomplete="off">
       <span class="search-icon">🔍</span>
     </div>
     <div id="results"></div>
@@ -341,10 +281,10 @@
 </div>
 
 <script>
-const STORAGE_KEY = 'contacts_db_v2';
-let contacts = []; // [{name, phone, normalized}]
+const STORAGE_KEY = 'contacts_db_v3';
+let contacts = [];
+let searchMode = 'name'; // 'name' or 'phone'
 
-// Normalize phone number to 10-digit Iranian format
 function normalizePhone(phone) {
   if (!phone) return '';
   let p = phone.replace(/\D/g, '');
@@ -353,36 +293,37 @@ function normalizePhone(phone) {
   return p;
 }
 
-// Decode quoted-printable
+function normalizeName(name) {
+  return name.toLowerCase()
+    .replace(/[_\.\-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function decodeQP(str) {
   try {
     return decodeURIComponent(str.replace(/=([0-9A-Fa-f]{2})/g, (_, h) => '%' + h));
-  } catch {
-    return str;
-  }
+  } catch { return str; }
 }
 
-// Parse VCF content
 function parseVCF(text) {
   const result = [];
   const vcards = text.split(/BEGIN:VCARD/i).slice(1);
-  
+  const seen = new Set();
+
   for (const vcard of vcards) {
     const lines = vcard.split(/\r?\n/);
     let name = '';
     const phones = [];
 
     for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      
-      // Handle folded lines
-      let full = line;
+      let full = lines[i];
       while (i + 1 < lines.length && (lines[i+1].startsWith(' ') || lines[i+1].startsWith('\t'))) {
         full += lines[++i].trim();
       }
 
       const upper = full.toUpperCase();
-      
+
       if (upper.startsWith('FN')) {
         let val = full.split(':').slice(1).join(':').trim();
         if (upper.includes('QUOTED-PRINTABLE')) {
@@ -391,93 +332,87 @@ function parseVCF(text) {
         }
         if (val) name = val;
       }
-      
+
       if (upper.startsWith('TEL')) {
         const phone = full.split(':').slice(1).join(':').trim();
         if (phone && /\d{6,}/.test(phone)) phones.push(phone);
       }
     }
 
-    if (name || phones.length) {
+    if (phones.length > 0) {
+      const seenPhones = new Set();
       for (const phone of phones) {
         const normalized = normalizePhone(phone);
         if (normalized.length >= 7) {
-          result.push({ name: name || 'ناشناس', phone, normalized });
+          const key = (name || '') + '|' + normalized;
+          if (!seen.has(key)) {
+            seen.add(key);
+            result.push({ name: name || 'ناشناس', phone, normalized, nameLower: normalizeName(name || '') });
+          }
         }
-      }
-      // Contact with name but no phone
-      if (phones.length === 0 && name) {
-        result.push({ name, phone: '', normalized: '' });
       }
     }
   }
   return result;
 }
 
-// Parse xlsx using SheetJS
 async function parseXLSX(file) {
   return new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
-    script.onload = () => {
-      const reader = new FileReader();
-      reader.onload = e => {
-        try {
-          const wb = XLSX.read(e.target.result, { type: 'array' });
-          const ws = wb.Sheets[wb.SheetNames[0]];
-          const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
-          const result = [];
-          
-          for (const row of rows) {
-            const vals = Object.values(row).map(String);
-            // Find phone-like value
-            const phoneVal = vals.find(v => /^[\d\+\-\s\(\)]{7,}$/.test(v.trim()));
-            const nameVal = vals.find(v => v && v !== phoneVal && v.trim().length > 1);
-            
-            if (phoneVal) {
-              const normalized = normalizePhone(phoneVal);
-              result.push({ name: nameVal || 'ناشناس', phone: phoneVal.trim(), normalized });
-            }
-          }
-          resolve(result);
-        } catch(e) { reject(e); }
-      };
-      reader.readAsArrayBuffer(file);
-    };
-    script.onerror = () => reject(new Error('XLSX load failed'));
-    document.head.appendChild(script);
+    if (window.XLSX) return doXLSX(file, resolve, reject);
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    s.onload = () => doXLSX(file, resolve, reject);
+    s.onerror = () => reject(new Error('XLSX load failed'));
+    document.head.appendChild(s);
   });
+}
+
+function doXLSX(file, resolve, reject) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const wb = XLSX.read(e.target.result, { type: 'array' });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+      const result = [];
+      for (const row of rows) {
+        const vals = Object.values(row).map(String);
+        const phoneVal = vals.find(v => /^[\d\+\-\s\(\)]{7,}$/.test(v.trim()));
+        const nameVal = vals.find(v => v && v !== phoneVal && v.trim().length > 1);
+        if (phoneVal) {
+          const normalized = normalizePhone(phoneVal);
+          const name = nameVal || 'ناشناس';
+          result.push({ name, phone: phoneVal.trim(), normalized, nameLower: normalizeName(name) });
+        }
+      }
+      resolve(result);
+    } catch(e) { reject(e); }
+  };
+  reader.readAsArrayBuffer(file);
 }
 
 async function handleFile(file) {
   if (!file) return;
-  
   const ext = file.name.split('.').pop().toLowerCase();
-  setProgress(true, 'در حال خواندن فایل...');
-  
+  setProgress(true, 'در حال خواندن فایل...', 30);
   try {
     let parsed = [];
-    
     if (ext === 'xlsx' || ext === 'xls') {
-      setProgress(true, 'در حال پردازش اکسل...');
+      setProgress(true, 'در حال پردازش اکسل...', 50);
       parsed = await parseXLSX(file);
     } else {
       const text = await file.text();
-      setProgress(true, 'در حال تجزیه مخاطبین...');
-      await sleep(50);
+      setProgress(true, 'در حال تجزیه مخاطبین...', 60);
+      await sleep(30);
       parsed = parseVCF(text);
     }
-
-    setProgress(true, 'در حال ذخیره‌سازی...', 80);
-    await sleep(50);
-    
+    setProgress(true, 'در حال ذخیره‌سازی...', 85);
+    await sleep(30);
     contacts = parsed;
     saveToStorage(file.name);
-    
     setProgress(false);
     updateStatus(file.name);
     showSearch();
-    
   } catch(e) {
     setProgress(false);
     alert('خطا در پردازش فایل: ' + e.message);
@@ -486,7 +421,7 @@ async function handleFile(file) {
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-function setProgress(show, label = '', pct = 60) {
+function setProgress(show, label='', pct=60) {
   document.getElementById('progress-bar').style.display = show ? 'block' : 'none';
   document.getElementById('progress-label').textContent = label;
   document.getElementById('progress-fill').style.width = pct + '%';
@@ -494,12 +429,8 @@ function setProgress(show, label = '', pct = 60) {
 
 function saveToStorage(filename) {
   try {
-    const data = { contacts, filename, savedAt: Date.now() };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch(e) {
-    // Storage might be full
-    console.warn('Could not save to localStorage:', e);
-  }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ contacts, filename, savedAt: Date.now() }));
+  } catch(e) { console.warn('localStorage full:', e); }
 }
 
 function loadFromStorage() {
@@ -508,11 +439,11 @@ function loadFromStorage() {
     if (!raw) return false;
     const data = JSON.parse(raw);
     contacts = data.contacts || [];
+    // Ensure nameLower exists for old data
+    contacts.forEach(c => { if (!c.nameLower) c.nameLower = normalizeName(c.name || ''); });
     updateStatus(data.filename, data.savedAt);
-    return true;
-  } catch {
-    return false;
-  }
+    return contacts.length > 0;
+  } catch { return false; }
 }
 
 function clearDatabase() {
@@ -525,17 +456,15 @@ function clearDatabase() {
   document.getElementById('clear-btn').style.display = 'none';
   document.getElementById('search-section').classList.remove('visible');
   document.getElementById('upload-zone').classList.remove('hidden');
+  document.getElementById('results').innerHTML = '';
+  document.getElementById('search-input').value = '';
 }
 
 function updateStatus(filename, savedAt) {
   document.getElementById('status-dot').className = 'status-dot active';
-  document.getElementById('status-title').textContent = `${contacts.length.toLocaleString('fa')} مخاطب بارگذاری شد`;
-  
+  document.getElementById('status-title').textContent = `${contacts.length.toLocaleString('fa-IR')} مخاطب بارگذاری شد`;
   let detail = filename || 'فایل نامشخص';
-  if (savedAt) {
-    const d = new Date(savedAt);
-    detail += ` · ${d.toLocaleDateString('fa-IR')}`;
-  }
+  if (savedAt) detail += ` · ${new Date(savedAt).toLocaleDateString('fa-IR')}`;
   document.getElementById('status-detail').textContent = detail;
   document.getElementById('clear-btn').style.display = 'block';
 }
@@ -550,65 +479,103 @@ function showUpload() {
   document.getElementById('upload-zone').classList.remove('hidden');
 }
 
+function switchTab(mode) {
+  searchMode = mode;
+  const inp = document.getElementById('search-input');
+
+  if (mode === 'name') {
+    document.getElementById('tab-name').classList.add('active');
+    document.getElementById('tab-phone').classList.remove('active');
+    inp.placeholder = 'نام مخاطب را وارد کنید...';
+    inp.type = 'text';
+    inp.style.direction = 'rtl';
+  } else {
+    document.getElementById('tab-phone').classList.add('active');
+    document.getElementById('tab-name').classList.remove('active');
+    inp.placeholder = 'شماره تلفن را وارد کنید...';
+    inp.type = 'tel';
+    inp.style.direction = 'ltr';
+    inp.style.textAlign = 'right';
+  }
+
+  inp.value = '';
+  document.getElementById('results').innerHTML = '';
+  inp.focus();
+}
+
+function highlight(text, query) {
+  if (!query || !text) return esc(text);
+  const idx = text.toLowerCase().indexOf(query.toLowerCase());
+  if (idx === -1) return esc(text);
+  return esc(text.slice(0, idx)) + '<mark>' + esc(text.slice(idx, idx + query.length)) + '</mark>' + esc(text.slice(idx + query.length));
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
 function search(query) {
   const resultsEl = document.getElementById('results');
   query = query.trim();
-  
-  if (!query) {
+
+  if (!query || query.length < 2) {
     resultsEl.innerHTML = '';
     return;
   }
 
-  const norm = normalizePhone(query);
-  const last8 = norm.slice(-8);
-  
   let found = [];
-  
-  if (norm.length >= 4) {
-    // Exact/partial match on normalized
-    found = contacts.filter(c => c.normalized && c.normalized.includes(norm.length >= 6 ? norm : norm));
-    
-    // If not enough, try last 8 digits
-    if (found.length === 0 && last8.length >= 6) {
-      found = contacts.filter(c => c.normalized && c.normalized.endsWith(last8));
+
+  if (searchMode === 'phone') {
+    const norm = normalizePhone(query);
+    const last8 = norm.slice(-8);
+    if (norm.length >= 4) {
+      found = contacts.filter(c => c.normalized && c.normalized.includes(norm));
+      if (found.length === 0 && last8.length >= 6) {
+        found = contacts.filter(c => c.normalized && c.normalized.endsWith(last8));
+      }
     }
+  } else {
+    // Name search — normalize and search
+    const qLower = normalizeName(query);
+    found = contacts.filter(c => c.nameLower && c.nameLower.includes(qLower));
   }
+
+  // Deduplicate
+  const seen = new Set();
+  found = found.filter(c => {
+    const k = c.name + '|' + c.phone;
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
 
   if (found.length === 0) {
     resultsEl.innerHTML = `<div class="no-result"><div class="icon">🔍</div>نتیجه‌ای یافت نشد</div>`;
     return;
   }
 
-  // Deduplicate
-  const seen = new Set();
-  found = found.filter(c => {
-    const key = c.name + c.phone;
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
-
-  const html = found.slice(0, 20).map(c => {
-    const initials = c.name.charAt(0) || '?';
-    const badge = found.length > 1 ? '' : '<span class="result-badge">یافت شد</span>';
+  const shown = found.slice(0, 30);
+  const html = shown.map(c => {
+    const initial = (c.name || '?').charAt(0);
+    const nameHtml = searchMode === 'name' ? highlight(c.name, query) : esc(c.name);
+    const phoneHtml = searchMode === 'phone' ? highlight(c.phone, query) : esc(c.phone);
     return `<div class="result-card">
-      <div class="result-avatar">${initials}</div>
+      <div class="result-avatar">${esc(initial)}</div>
       <div class="result-info">
-        <div class="result-name">${escHtml(c.name)}</div>
-        <div class="result-phone">${escHtml(c.phone)}</div>
+        <div class="result-name">${nameHtml}</div>
+        <div class="result-phone">${phoneHtml}</div>
       </div>
-      ${badge}
     </div>`;
   }).join('');
 
-  resultsEl.innerHTML = html + (found.length > 20 ? `<div class="no-result" style="padding:12px">و ${found.length - 20} نتیجه دیگر...</div>` : '');
+  const extra = found.length > 30
+    ? `<div class="more-results">و ${(found.length - 30).toLocaleString('fa-IR')} نتیجه دیگر — جستجو را دقیق‌تر کنید</div>`
+    : '';
+
+  resultsEl.innerHTML = html + extra;
 }
 
-function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-// Drag & drop
+// Drag & Drop
 const zone = document.getElementById('upload-zone');
 zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
 zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
@@ -620,9 +587,7 @@ zone.addEventListener('drop', e => {
 });
 
 // Init
-if (loadFromStorage() && contacts.length > 0) {
-  showSearch();
-}
+if (loadFromStorage()) showSearch();
 </script>
 </body>
 </html>
