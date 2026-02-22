@@ -219,10 +219,12 @@
   }
   .no-result .icon { font-size: 2rem; margin-bottom: 8px; }
 
-  .more-results {
-    text-align: center; padding: 10px;
-    color: var(--muted); font-size: 0.82rem;
-    border: 1px dashed var(--border); border-radius: 10px; margin-top: 4px;
+  .results-count {
+    text-align: center; padding: 12px;
+    color: var(--accent); font-size: 0.85rem;
+    background: rgba(110,231,183,0.08);
+    border: 1px solid rgba(110,231,183,0.2);
+    border-radius: 10px; margin-bottom: 12px; font-weight: 600;
   }
 
   footer { margin-top: 28px; text-align: center; color: var(--muted); font-size: 0.74rem; }
@@ -274,6 +276,7 @@
       <input type="text" id="search-input" placeholder="نام مخاطب را وارد کنید..." oninput="search(this.value)" autocomplete="off">
       <span class="search-icon">🔍</span>
     </div>
+    <div id="results-count"></div>
     <div id="results"></div>
   </div>
 
@@ -457,6 +460,7 @@ function clearDatabase() {
   document.getElementById('search-section').classList.remove('visible');
   document.getElementById('upload-zone').classList.remove('hidden');
   document.getElementById('results').innerHTML = '';
+  document.getElementById('results-count').innerHTML = '';
   document.getElementById('search-input').value = '';
 }
 
@@ -500,6 +504,7 @@ function switchTab(mode) {
 
   inp.value = '';
   document.getElementById('results').innerHTML = '';
+  document.getElementById('results-count').innerHTML = '';
   inp.focus();
 }
 
@@ -516,10 +521,12 @@ function esc(s) {
 
 function search(query) {
   const resultsEl = document.getElementById('results');
+  const countEl = document.getElementById('results-count');
   query = query.trim();
 
   if (!query || query.length < 2) {
     resultsEl.innerHTML = '';
+    countEl.innerHTML = '';
     return;
   }
 
@@ -551,11 +558,12 @@ function search(query) {
 
   if (found.length === 0) {
     resultsEl.innerHTML = `<div class="no-result"><div class="icon">🔍</div>نتیجه‌ای یافت نشد</div>`;
+    countEl.innerHTML = '';
     return;
   }
 
-  const shown = found.slice(0, 30);
-  const html = shown.map(c => {
+  // Show all results without limiting
+  const html = found.map(c => {
     const initial = (c.name || '?').charAt(0);
     const nameHtml = searchMode === 'name' ? highlight(c.name, query) : esc(c.name);
     const phoneHtml = searchMode === 'phone' ? highlight(c.phone, query) : esc(c.phone);
@@ -568,11 +576,8 @@ function search(query) {
     </div>`;
   }).join('');
 
-  const extra = found.length > 30
-    ? `<div class="more-results">و ${(found.length - 30).toLocaleString('fa-IR')} نتیجه دیگر — جستجو را دقیق‌تر کنید</div>`
-    : '';
-
-  resultsEl.innerHTML = html + extra;
+  countEl.innerHTML = `${found.length.toLocaleString('fa-IR')} نتیجه یافت شد`;
+  resultsEl.innerHTML = html;
 }
 
 // Drag & Drop
